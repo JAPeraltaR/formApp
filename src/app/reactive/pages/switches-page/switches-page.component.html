@@ -30,7 +30,10 @@
                   Femenino
                 </label>
             </div>
-
+            <span *ngIf="isValidField('gender')" class="form-text text-danger">
+              {{ getFieldError('gender') }}
+              <!-- Debe Seleccionar una opción. -->
+            </span>
         </div>
     </div>
 
@@ -63,8 +66,8 @@
                   Términos y condiciones de uso
                 </label>
               </div>
-              <span class="form-text text-danger">
-                 Debe de aceptar las condiciones de uso
+              <span *ngIf="isValidField('termAndConditions')" class="form-text text-danger">
+                 {{ getFieldError('termAndConditions') }}
               </span>
 
         </div>
@@ -85,15 +88,15 @@
 
 
 <h5>Valor del formulario</h5>
-<pre>{{ 'object' | json }}</pre>
+<pre>{{ myForm.value | json }}</pre>
 <br>
 
 <h5>Persona</h5>
-<pre>{{ 'object' | json }}</pre>
+<pre>{{ myForm.controls['gender'].value | json }}</pre>
 <br>
 
 <h5>Valid</h5>
-<pre>{{ 'object' | json }}</pre>
+<pre>{{ myForm.valid| json }}</pre>
 
 <!-- <h5>Términos</h5> -->
 <!-- <pre>{{ myForm.controls?.terminos?.errors | json }}</pre> -->

@@ -1,5 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+const defaultValues = {
+  gender: '',
+  wantNotifications: false,
+  termAndConditions: false
+}
 
 @Component({
   selector: 'reactive-switches-page',
@@ -8,25 +14,47 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   templateUrl: './switches-page.component.html',
   styles: ``
 })
-export class SwitchesPageComponent {
+export class SwitchesPageComponent{
+
+  private createNestedMap = <K, V>(entries: [K, [K, V]][]): Map<K, Map<K, V>> =>
+    new Map(entries.map(([key, [innerKey, value]]) =>
+        [key, new Map([[innerKey, value]])]
+    ));
+
+  private mapError = this.createNestedMap([
+    ['gender',['required','Debe Seleccionar una opción.']],
+    ['termAndConditions',['required','Debe de aceptar las condiciones de uso']]
+  ]);
 
   private fb = inject(FormBuilder);
 
   public myForm: FormGroup = this.fb.group({
-    gender: ['M', Validators.required],
-    wantNotifications: [true,Validators.required],
+    gender: ['', [Validators.required]],
+    wantNotifications: [false,Validators.required],
     termAndConditions: [false, Validators.requiredTrue]
   })
 
   onSave(): void {
-    if( this.myForm.invalid ) {
+    if( !this.myForm.valid ) {
       this.myForm.markAllAsTouched();
       return;
     }
+    console.log(this.myForm.value);
+    this.myForm.reset(defaultValues);
   }
 
   isValidField( field: string ) {
     return this.myForm.controls[field].errors && this.myForm.controls[field].touched
+  }
+
+  getFieldError( field: string ): string | null{
+    if( !this.myForm.controls[field] ) return null;
+    const errors = this.myForm.controls[field].errors || {};
+    for (const error of Object.keys(errors)) {
+        const message = this.mapError.get(field)?.get(error);
+        if( message )  return message;
+    }
+    return null;
   }
 
 }
