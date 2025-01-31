@@ -1,5 +1,6 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ValidatorsService } from '../../../shared/services/validators.service';
 
 const defaultValues = {
   gender: '',
@@ -26,6 +27,7 @@ export class SwitchesPageComponent{
     ['termAndConditions',['required','Debe de aceptar las condiciones de uso']]
   ]);
 
+  private valitdatorService = inject(ValidatorsService);
   private fb = inject(FormBuilder);
 
   public myForm: FormGroup = this.fb.group({
@@ -44,17 +46,21 @@ export class SwitchesPageComponent{
   }
 
   isValidField( field: string ) {
-    return this.myForm.controls[field].errors && this.myForm.controls[field].touched
+    return this.valitdatorService.isValidField( this.myForm, field );
   }
 
-  getFieldError( field: string ): string | null{
-    if( !this.myForm.controls[field] ) return null;
-    const errors = this.myForm.controls[field].errors || {};
-    for (const error of Object.keys(errors)) {
-        const message = this.mapError.get(field)?.get(error);
-        if( message )  return message;
-    }
-    return null;
+  getFieldError( field: string ) {
+    return this.valitdatorService.getFieldError( this.myForm, field );
   }
+
+  // getFieldError( field: string ): string | null{
+  //   if( !this.myForm.controls[field] ) return null;
+  //   const errors = this.myForm.controls[field].errors || {};
+  //   for (const error of Object.keys(errors)) {
+  //       const message = this.mapError.get(field)?.get(error);
+  //       if( message )  return message;
+  //   }
+  //   return null;
+  // }
 
 }
